@@ -107,13 +107,16 @@ router.post('/courses',auth,adminAuth,async (req,res) =>{
         })
     }
 })
-router.put('courses/:id',auth,adminAuth,async (req,res) =>{
-    const id = req.params.id;
+router.put('/courses/:id',auth,adminAuth,async (req,res) =>{
+    const id = parseInt(req.params.id);
+    const body = req.body
+    const {title, description,price,imageLink,published} = body
+
     const newCourse = {title, description,price,imageLink,published,id}
-    if(await cmodel.replaceOne(
-        {id },
+    if((await cmodel.replaceOne(
+        {id},
         newCourse
-    ).modifiedCount == 0){
+    )).modifiedCount == 0){
         res.json({
             message : "Invalid id"
         })
@@ -127,7 +130,7 @@ router.put('courses/:id',auth,adminAuth,async (req,res) =>{
 
 router.get('/courses',auth,adminAuth,async (req,res)=>{
     res.json({
-        courses : cmodel.find()
+        courses : await cmodel.find()
     })
 })
 
