@@ -72,14 +72,15 @@ router.post('/login',async (req,res)=>{
 
 })
 router.post('/courses/:id',auth,async(req,res)=>{
-    if(!(await cmodel.findOne({id : req.params.id}))){
+    const id = parseInt(req.param.id);
+    if(!(await cmodel.findOne({id }))){
         res.json({
             message : "Course does not exist"
         })
     }
     await umodel.updateOne(
         {_id : req.user.id},
-        {$push : {purchasedCourses : req.params.id} }
+        {$push : {purchasedCourses : id} }
     )
     res.json({ 
         message : "Course purchased successfully" 
