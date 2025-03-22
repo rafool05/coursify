@@ -1,23 +1,24 @@
 import mongoose from 'mongoose'
 import { number } from 'zod';
 
-mongoose.connect()
+mongoose.connect('mongodb+srv://r_afool:oJwg%26aTmG7cs7eDa@cluster0.dkuwz.mongodb.net/coursify')
 
 const Schema = mongoose.Schema;
 
 const user = new Schema({
-    userid : {type : String, unique : true},
+    username : {type : String, unique : true},
     password : String,
-    isAdmin : Boolean
+    isAdmin : Boolean,
+    purchasedCourses : Array
 })
 
 const courses = new Schema({
     title : String,
     description : String,
-    price : number,
+    price : Number,
     imageLink : String,
     published : Boolean,
-    id : number
+    id : Number
     
 })
 

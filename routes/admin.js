@@ -3,45 +3,24 @@ import express from 'express'
 import {z} from 'zod'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
-import mongoose from 'mongoose';
-import {umodel,cmodel} from './db.js'
+import {umodel,cmodel} from '../db.js'
+import {auth,adminAuth} from "../index.js"
 const router = express.Router();
 router.use(express.json());
-const cid = (await cmodel.find()).size();
-mongoose.connect('')
- async function auth(req,res,next){
-    const token = req.headers.Authorization
-    if(!token){
-        res.status(403).json({
-            message : "You are not signed in"
-        })
-        return;
-    }
+let cid 
+cmodel.find().then(data =>{
+    cid = data.length
+})
 
-    try{
-        const decoded = jwt.verify(token,JWT_SECRET);
-        if(!decoded.isAdmin){
-            res.status(403).json({
-                message : "Unauthorised"
-            })
-        }
-        else next();
-    }
-    catch(err){
-        res.status(403).json({
-            message : "Unauthorised"
-        })
-    }
-    
-}
 router.post('/signup',async(req,res) =>{
     const body = req.body;
     const {username, password} = body;
     try{
-        const User = {
+        const User = z.object
+        ({
             username : z.string().min(5).max(25),
             password : z.string().min(5).max(50),
-        }
+        })
         const parseResult = User.safeParse({username,password})
         if(parseResult.success){
             await umodel.create({
@@ -104,7 +83,7 @@ router.post('/login',async (req,res) =>{
     }
 
 })
-router.post('/courses',auth,async (req,res) =>{
+router.post('/courses',auth,adminAuth,async (req,res) =>{
     const body = req.body;
     const {title, description,price,imageLink,published} = body;
     if(z.string().url().safeParse(imageLink).success){
@@ -114,11 +93,11 @@ router.post('/courses',auth,async (req,res) =>{
             price,
             imageLink,
             published,
-            courseid : cid
+            id : cid
         })
         res.json({
             message : "Course Created Successfully",
-            courseid : cid
+            id : cid
         })
         cid++;
     }
@@ -128,11 +107,11 @@ router.post('/courses',auth,async (req,res) =>{
         })
     }
 })
-router.put('/:id',auth,async (req,res) =>{
+router.put('courses/:id',auth,adminAuth,async (req,res) =>{
     const id = req.params.id;
-    const newCourse = {title, description,price,imageLink,published,courseid : id}
+    const newCourse = {title, description,price,imageLink,published,id}
     if(await cmodel.replaceOne(
-        {courseid : id},
+        {id },
         newCourse
     ).modifiedCount == 0){
         res.json({
@@ -146,7 +125,7 @@ router.put('/:id',auth,async (req,res) =>{
     }
 })
 
-router.get('/courses',auth,async (req,res)=>{
+router.get('/courses',auth,adminAuth,async (req,res)=>{
     res.json({
         courses : cmodel.find()
     })
