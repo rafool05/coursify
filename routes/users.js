@@ -60,7 +60,7 @@ router.post('/login',async (req,res)=>{
                 token : jwt.sign({
                     id : curUser._id,
                     isAdmin : curUser.isAdmin
-                })
+                },JWT_SECRET)
             })
         }
         else{
@@ -72,23 +72,32 @@ router.post('/login',async (req,res)=>{
 
 })
 router.post('/courses/:id',auth,async(req,res)=>{
-    const id = parseInt(req.param.id);
+    const id = parseInt(req.params.id);
     if(!(await cmodel.findOne({id }))){
         res.json({
             message : "Course does not exist"
         })
     }
-    await umodel.updateOne(
-        {_id : req.user.id},
-        {$push : {purchasedCourses : id} }
-    )
-    res.json({ 
-        message : "Course purchased successfully" 
-    })
+    else{
+        if((await umodel.updateOne(
+            {_id : req.user.id},
+            {$addToSet : {purchasedCourses : id} }
+            )).modifiedCount == 0)
+        {
+            res.json({
+                message : "You already have this course purchased"
+            })
+        }       
+        else{
+            res.json({ 
+                message : "Course purchased successfully" 
+            })
+        }
+    }
 })   
 
 router.get('/purchasedCourses',auth,async (req,res) =>{
-    const user = await umodel.findONe({
+    const user = await umodel.findOne({
         _id : req.user.id
     })
     res.json({
@@ -98,9 +107,9 @@ router.get('/purchasedCourses',auth,async (req,res) =>{
     })
 
 })
-router.get('/courses',(req,res)=>{
+router.get('/courses',async (req,res)=>{
     res.json({
-        courses : cmodel.find()
+        courses : await cmodel.find()
     })
 })
 export {
