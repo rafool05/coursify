@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
 import { number } from 'zod';
 
-mongoose.connect('mongodb+srv://r_afool:oJwg%26aTmG7cs7eDa@cluster0.dkuwz.mongodb.net/coursify')
+mongoose.connect('')
 
 const Schema = mongoose.Schema;
 
