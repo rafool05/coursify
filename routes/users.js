@@ -4,7 +4,7 @@ import {z} from 'zod'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import {umodel,cmodel} from '../db.js'
-import {auth} from "../index.js"
+import {auth} from "../auth.js"
 const router = express.Router();
 router.use(express.json());
 
