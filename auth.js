@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import 'dotenv/config'
-const JWT_SECRET = process.end.JWT_SECRET
+const JWT_SECRET = process.env.JWT_SECRET
 async function auth(req,res,next){
     const token = req.headers.authorization
     
