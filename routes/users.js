@@ -1,10 +1,11 @@
-const JWT_SECRET = 'ilovemyselfmorethanyoucankthinkof'
 import express from 'express'
 import {z} from 'zod'
 import jwt from 'jsonwebtoken'
 import bcrypt from 'bcrypt'
 import {umodel,cmodel} from '../db.js'
 import {auth} from "../auth.js"
+import 'dotenv/config' 
+const JWT_SECRET = process.env.JWT_SECRET
 const router = express.Router();
 router.use(express.json());
 

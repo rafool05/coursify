@@ -1,7 +1,7 @@
 import mongoose from 'mongoose'
-import { number } from 'zod';
-
-mongoose.connect('')
+import 'dotenv/config'
+const mongo_url = process.env.mongo_url
+mongoose.connect(mongo_url)
 
 const Schema = mongoose.Schema;
 
